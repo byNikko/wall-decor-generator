@@ -164,8 +164,44 @@
     align-items:start;
   }
   @media (max-width:860px){
-    .app{grid-template-columns:1fr;}
-    .steps{grid-template-columns:1fr;}
+    .app{
+      grid-template-columns:1fr;
+    }
+    .steps{
+      grid-template-columns:1fr;
+    }
+    .palette{
+      position: relative; /* Evita que a paleta e a parede fiquem uma em cima da outra */
+      top: 0;
+    }
+    /* Grid de 4 colunas no celular */
+    #palette-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .piece-card {
+      padding: 4px;
+      margin-bottom: 0;
+    }
+    /* Adaptação dos textos e botões para o grid menor */
+    .piece-card .name {
+      font-size: 9px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .shape-row {
+      flex-direction: column; /* Coloca o círculo em cima do quadrado na coluna */
+      gap: 6px;
+      align-items: center;
+    }
+    .shape-btn {
+      width: 70%; /* Reduz a imagem da peça ao tamanho solicitado */
+      margin: 0 auto;
+    }
   }
 
   /* ---------- PALETTE ---------- */
@@ -264,6 +300,7 @@
     box-shadow:0 0 0 2px var(--white), 0 0 0 4px var(--ink);
   }
   .spacer{flex:1;}
+  
   .btn{
     font-family:'Arial Rounded MT Bold', sans-serif;
     font-size:14px;
@@ -299,17 +336,20 @@
 
   .stage-outer{
     border-radius:16px;
-    overflow:hidden;
+    overflow:auto; /* Habilita a barra de rolagem se a parede receber zoom */
     position:relative;
     border:1px solid #efe6e0;
+    height: 60vh; /* Mantém uma altura fixa para melhor controle no celular */
   }
   #stage{
     position:relative;
     width:100%;
+    min-height: 100%;
     aspect-ratio:4/3;
     overflow:hidden;
     touch-action:none;
-    transition:background .25s ease;
+    transition:background .25s ease, transform .2s ease;
+    transform-origin: top left; /* O zoom sempre cresce a partir do topo */
   }
   .empty-hint{
     position:absolute;
@@ -483,6 +523,13 @@
         <div id="wall-list" style="display:flex; gap:8px;"></div>
       </div>
       <div class="spacer"></div>
+      
+      <!-- Novos controles de Zoom -->
+      <div class="zoom-controls" style="display:flex; gap:6px; margin-right:12px;">
+        <button class="btn btn-ghost" id="btn-zoom-out" style="padding: 4px 12px; font-size: 16px;">-</button>
+        <button class="btn btn-ghost" id="btn-zoom-in" style="padding: 4px 12px; font-size: 16px;">+</button>
+      </div>
+
       <span class="counter" id="counter"><b>0</b> peças na composição</span>
       <button class="btn btn-ghost" id="btn-clear">limpar tudo</button>
       <button class="btn btn-primary" id="btn-download">baixar composição</button>
@@ -519,7 +566,6 @@
 <script>
 /* =========================================================================
    DADOS EDITÁVEIS (Atualizados para suportar reflexos separados!)
-   Agora cada cor possui duas propriedades de imagem (imgCircle e imgSquare).
    ========================================================================= */
 const PIECES = [
   { id: 'verde',   name: 'Verde Claro', imgCircle: 'pics/verdelimao.png', imgSquare: 'pics/verdelimao-rect.png' },
@@ -568,7 +614,6 @@ const imgCache = {}; // id_shape -> HTMLImageElement (pré-carregada p/ export)
 PIECES.forEach(p => {
   const card = document.createElement('div');
   card.className = 'piece-card';
-  // Note que os fundos dos botões agora usam a imagem correta para cada formato
   card.innerHTML = `
     <div class="name">${p.name}</div>
     <div class="shape-row">
@@ -691,7 +736,7 @@ function setShape(shape) {
   selectedEl.classList.add(shape);
   selectedEl.dataset.shape = shape;
 
-  // Lógica vitalícia: Muda também a fonte (src) da imagem (para carregar o reflexo correto)
+  // Muda também a fonte (src) da imagem para carregar o reflexo correto
   const pieceId = selectedEl.dataset.pieceId;
   const piece = PIECES.find(p => p.id === pieceId);
   const imgElement = selectedEl.querySelector('img');
@@ -701,7 +746,7 @@ function setShape(shape) {
   document.getElementById('shape-square').classList.toggle('active', shape === 'square');
 }
 
-// Checagem de segurança caso os botões de deletar/duplicar tenham sido incluídos na sua base original sem aparecerem no seu snippet
+// Botões originais caso existam fora do gerador base
 const btnDelete = document.getElementById('btn-delete');
 if (btnDelete) {
   btnDelete.addEventListener('click', () => {
@@ -730,6 +775,19 @@ document.getElementById('btn-clear').addEventListener('click', () => {
   updateEmptyHint();
 });
 
+// ---- Lógica de Zoom ----
+let currentZoom = 1;
+
+document.getElementById('btn-zoom-in').addEventListener('click', () => {
+  currentZoom = Math.min(currentZoom + 0.2, 2.5); // Aumenta o zoom até 2.5x
+  stage.style.transform = `scale(${currentZoom})`;
+});
+
+document.getElementById('btn-zoom-out').addEventListener('click', () => {
+  currentZoom = Math.max(currentZoom - 0.2, 0.5); // Diminui o zoom até 0.5x
+  stage.style.transform = `scale(${currentZoom})`;
+});
+
 // ---- arrastar (mouse + touch via Pointer Events) ----
 function attachDrag(el) {
   let dragging = false;
@@ -748,8 +806,9 @@ function attachDrag(el) {
 
   el.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
+    // Divide a diferença de movimento pelo zoom atual para sincronizar o cursor com a peça
+    const dx = (e.clientX - startX) / currentZoom;
+    const dy = (e.clientY - startY) / currentZoom;
     el.style.left = (origLeft + dx) + 'px';
     el.style.top = (origTop + dy) + 'px';
   });
@@ -764,16 +823,19 @@ function attachDrag(el) {
 
 // ---- baixar composição como imagem ----
 document.getElementById('btn-download').addEventListener('click', () => {
-  const stageRect = stage.getBoundingClientRect();
+  // Ignoramos a escala de visualização e pegamos o tamanho original (offsetWidth)
+  const stageWidth = stage.offsetWidth;
+  const stageHeight = stage.offsetHeight;
   const scale = 2; // exporta em alta resolução
+  
   const canvas = document.createElement('canvas');
-  canvas.width = stageRect.width * scale;
-  canvas.height = stageRect.height * scale;
+  canvas.width = stageWidth * scale;
+  canvas.height = stageHeight * scale;
   const ctx = canvas.getContext('2d');
   ctx.scale(scale, scale);
 
   // fundo
-  paintBackground(ctx, currentWall.css, stageRect.width, stageRect.height);
+  paintBackground(ctx, currentWall.css, stageWidth, stageHeight);
 
   const pieces = Array.from(stage.querySelectorAll('.piece'));
   pieces.sort((a, b) => (parseInt(a.style.zIndex) || 0) - (parseInt(b.style.zIndex) || 0));
