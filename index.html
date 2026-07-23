@@ -518,45 +518,28 @@
 
 <script>
 /* =========================================================================
-   DADOS EDITÁVEIS
-   Para adicionar uma nova cor no futuro, basta incluir um novo objeto aqui
-   com {id, name, img}. As versões em círculo e quadrado são geradas
-   automaticamente a partir da mesma foto — não precisa duplicar imagem.
+   DADOS EDITÁVEIS (Atualizados para suportar reflexos separados!)
+   Agora cada cor possui duas propriedades de imagem (imgCircle e imgSquare).
    ========================================================================= */
 const PIECES = [
-  { id: 'verde',   name: 'Verde Claro Round',    img: 'pics/verdelimao.png' }
-  { id: 'verde rect',   name: 'Verde Claro Square',    img: 'pics/verdelimao-rect.png' }
-  { id: 'menta',   name: 'Menta Round',    img: 'pics/menta.png' }
-  { id: 'menta rect',   name: 'Menta Square',    img: 'pics/menta-rect.png' }
-  { id: 'turquesa',   name: 'Turquesa Round',    img: 'pics/turquesa.png' }
-  { id: 'turquesa rect',   name: 'Turquesa Square',    img: 'pics/turquesa-rect.png' }
-  { id: 'royal',   name: 'Royal Round',    img: 'pics/royal.png' }
-  { id: 'royal rect',   name: 'Royal Square',    img: 'pics/royal-rect.png' }
-  { id: 'agua',   name: 'Agua Round',    img: 'pics/agua.png' }
-  { id: 'agua rect',   name: 'Agua Square',    img: 'pics/agua-rect.png' }
-  { id: 'ceu',   name: 'Ceu Round',    img: 'pics/ceu.png' }
-  { id: 'ceu rect',   name: 'Ceu Square',    img: 'pics/ceu-rect.png' }
-  { id: 'daisy',   name: 'Daisy Round',    img: 'pics/daisy.png' }
-  { id: 'daisy rect',   name: 'Daisy Square',    img: 'pics/daisy-rect.png' }
-  { id: 'sun',   name: 'Sun Round',    img: 'pics/sun.png' }
-  { id: 'sun rect',   name: 'Sun Square',    img: 'pics/sun-rect.png' }
-  { id: 'vitc',   name: 'Vit C Round',    img: 'pics/vitc.png' }
-  { id: 'vitc rect',   name: 'Vit C Square',    img: 'pics/vitc-rect.png' }
-  { id: 'fire',   name: 'Fire Round',    img: 'pics/fire.png' }
-  { id: 'fire rect',   name: 'Fire Square',    img: 'pics/fire-rect.png' }
-  { id: 'wine',   name: 'Wine Round',    img: 'pics/wine.png' }
-  { id: 'wine rect',   name: 'Wine Square',    img: 'pics/wine-rect.png' } 
-  { id: 'magenta',   name: 'Magenta Round',    img: 'pics/magenta.png' }
-  { id: 'magenta rect',   name: 'Magenta Square',    img: 'pics/magenta-rect.png' }
-  { id: 'peony',   name: 'Peony Round',    img: 'pics/peony.png' }
-  { id: 'peony rect',   name: 'Peony Square',    img: 'pics/peony-rect.png' }
-  { id: 'pink',   name: 'Pink Round',    img: 'pics/pink.png' }
-  { id: 'pink rect',   name: 'Pink Square',    img: 'pics/pink-rect.png' }
-  { id: 'plum',   name: 'Plum Round',    img: 'pics/plum.png' }
-  { id: 'plum rect',   name: 'Plum Square',    img: 'pics/plum-rect.png' }
-  { id: 'uva',   name: 'Uva Round',    img: 'pics/uva.png' }
-  { id: 'uva rect',   name: 'Uva Square',    img: 'pics/uva-rect.png' }
+  { id: 'verde',   name: 'Verde Claro', imgCircle: 'pics/verdelimao.png', imgSquare: 'pics/verdelimao-rect.png' },
+  { id: 'menta',   name: 'Menta',       imgCircle: 'pics/menta.png',      imgSquare: 'pics/menta-rect.png' },
+  { id: 'turquesa',name: 'Turquesa',    imgCircle: 'pics/turquesa.png',   imgSquare: 'pics/turquesa-rect.png' },
+  { id: 'royal',   name: 'Royal',       imgCircle: 'pics/royal.png',      imgSquare: 'pics/royal-rect.png' },
+  { id: 'agua',    name: 'Agua',        imgCircle: 'pics/agua.png',       imgSquare: 'pics/agua-rect.png' },
+  { id: 'ceu',     name: 'Ceu',         imgCircle: 'pics/ceu.png',        imgSquare: 'pics/ceu-rect.png' },
+  { id: 'daisy',   name: 'Daisy',       imgCircle: 'pics/daisy.png',      imgSquare: 'pics/daisy-rect.png' },
+  { id: 'sun',     name: 'Sun',         imgCircle: 'pics/sun.png',        imgSquare: 'pics/sun-rect.png' },
+  { id: 'vitc',    name: 'Vit C',       imgCircle: 'pics/vitc.png',       imgSquare: 'pics/vitc-rect.png' },
+  { id: 'fire',    name: 'Fire',        imgCircle: 'pics/fire.png',       imgSquare: 'pics/fire-rect.png' },
+  { id: 'wine',    name: 'Wine',        imgCircle: 'pics/wine.png',       imgSquare: 'pics/wine-rect.png' },
+  { id: 'magenta', name: 'Magenta',     imgCircle: 'pics/magenta.png',    imgSquare: 'pics/magenta-rect.png' },
+  { id: 'peony',   name: 'Peony',       imgCircle: 'pics/peony.png',      imgSquare: 'pics/peony-rect.png' },
+  { id: 'pink',    name: 'Pink',        imgCircle: 'pics/pink.png',       imgSquare: 'pics/pink-rect.png' },
+  { id: 'plum',    name: 'Plum',        imgCircle: 'pics/plum.png',       imgSquare: 'pics/plum-rect.png' },
+  { id: 'uva',     name: 'Uva',         imgCircle: 'pics/uva.png',        imgSquare: 'pics/uva-rect.png' }
 ];
+
 /* Para adicionar uma nova opção de parede, inclua um objeto {id, name, css}.
    'css' aceita qualquer valor válido de background (cor sólida ou gradiente). */
 const WALLS = [
@@ -579,24 +562,25 @@ const inspector = document.getElementById('inspector');
 let pieceSeq = 0;
 let zTop = 1;
 let selectedEl = null;
-const imgCache = {}; // id -> HTMLImageElement (pré-carregada p/ export)
+const imgCache = {}; // id_shape -> HTMLImageElement (pré-carregada p/ export)
 
 // ---- monta paleta ----
 PIECES.forEach(p => {
   const card = document.createElement('div');
   card.className = 'piece-card';
+  // Note que os fundos dos botões agora usam a imagem correta para cada formato
   card.innerHTML = `
     <div class="name">${p.name}</div>
     <div class="shape-row">
-      <button class="shape-btn circle" style="background-image:url('${p.img}')" data-piece="${p.id}" data-shape="circle"><span class="tag">círculo</span></button>
-      <button class="shape-btn square" style="background-image:url('${p.img}')" data-piece="${p.id}" data-shape="square"><span class="tag">quadrado</span></button>
+      <button class="shape-btn circle" style="background-image:url('${p.imgCircle}')" data-piece="${p.id}" data-shape="circle"><span class="tag" style="display:none;">círculo</span></button>
+      <button class="shape-btn square" style="background-image:url('${p.imgSquare}')" data-piece="${p.id}" data-shape="square"><span class="tag" style="display:none;">quadrado</span></button>
     </div>
   `;
   paletteList.appendChild(card);
 
-  const im = new Image();
-  im.src = p.img;
-  imgCache[p.id] = im;
+  // Pré-carrega ambas as imagens na memória para garantir que o download da tela funcione
+  const imC = new Image(); imC.src = p.imgCircle; imgCache[p.id + '_circle'] = imC;
+  const imS = new Image(); imS.src = p.imgSquare; imgCache[p.id + '_square'] = imS;
 });
 
 paletteList.addEventListener('click', (e) => {
@@ -647,7 +631,9 @@ function addPiece(piece, shape, opts = {}) {
   el.dataset.rotation = rotation;
   el.style.zIndex = ++zTop;
 
-  el.innerHTML = `<img src="${piece.img}" draggable="false"><div class="del">×</div>`;
+  // Carrega a imagem correta de acordo com o formato clicado
+  const imgSrc = shape === 'circle' ? piece.imgCircle : piece.imgSquare;
+  el.innerHTML = `<img src="${imgSrc}" draggable="false"><div class="del">×</div>`;
   stage.appendChild(el);
 
   attachDrag(el);
@@ -697,11 +683,20 @@ stage.addEventListener('pointerdown', (e) => {
 
 document.getElementById('shape-circle').addEventListener('click', () => setShape('circle'));
 document.getElementById('shape-square').addEventListener('click', () => setShape('square'));
+
 function setShape(shape) {
   if (!selectedEl) return;
+  
   selectedEl.classList.remove('circle', 'square');
   selectedEl.classList.add(shape);
   selectedEl.dataset.shape = shape;
+
+  // Lógica vitalícia: Muda também a fonte (src) da imagem (para carregar o reflexo correto)
+  const pieceId = selectedEl.dataset.pieceId;
+  const piece = PIECES.find(p => p.id === pieceId);
+  const imgElement = selectedEl.querySelector('img');
+  imgElement.src = shape === 'circle' ? piece.imgCircle : piece.imgSquare;
+
   document.getElementById('shape-circle').classList.toggle('active', shape === 'circle');
   document.getElementById('shape-square').classList.toggle('active', shape === 'square');
 }
@@ -785,13 +780,16 @@ document.getElementById('btn-download').addEventListener('click', () => {
 
   pieces.forEach(el => {
     const pieceId = el.dataset.pieceId;
-    const img = imgCache[pieceId];
+    const shape = el.dataset.shape;
+    
+    // Busca a imagem certa pré-carregada na memória
+    const img = imgCache[pieceId + '_' + shape]; 
+
     const w = parseInt(el.style.width);
     const h = parseInt(el.style.height);
     const left = parseInt(el.style.left);
     const top = parseInt(el.style.top);
     const rot = 0; // Rotação fixa em 0
-    const shape = el.dataset.shape;
     const cx = left + w / 2;
     const cy = top + h / 2;
 
@@ -842,5 +840,3 @@ updateEmptyHint();
 </script>
 </body>
 </html>
-
-```
